@@ -1,9 +1,7 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'application'
 }
-
-group 'org.example'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -11,19 +9,13 @@ repositories {
 
 dependencies {
     implementation group: 'org.web3j', name: 'core', version: '4.8.7'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'junit:junit:4.12'
 }
 
-test {
-    useJUnitPlatform()
-}
+mainClassName = 'org.stormbird.recovereth.RecoverEth'
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'org.stormbird.contractticker.TickerUpdate'
-    }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+apply plugin: 'application'
+
+run {
+    main = 'org.stormbird.recovereth.RecoverEth'
 }

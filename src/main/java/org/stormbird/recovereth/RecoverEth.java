@@ -67,6 +67,7 @@ public class RecoverEth
         long currentNonce = getLastTransactionNonce(web3j, keyAddress).blockingGet().longValue();
 
         System.out.println("Current nonce: " + currentNonce);
+        System.out.println("Key Address: " + keyAddress);
 
         //create null transactions up to the target nonce
         //add transactions until we reach the nonce, then write the nonce tx
