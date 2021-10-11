@@ -56,11 +56,11 @@ public class RecoverEth
     public void go()
     {
         client = buildClient();
-        web3j = getWeb3j();
+        web3j = getWeb3j(DEPLOYMENT_CHAIN);
         credentials = Credentials.create(PRIVATE_KEY);
         String keyAddress = credentials.getAddress();
-        BigDecimal baseGasPrice = new BigDecimal(getGasPrice());
-        BigInteger raisedGasPrice = baseGasPrice.multiply(BigDecimal.valueOf(1.5)).toBigInteger(); //use 1.5x base price for constructor tx
+        BigDecimal baseGasPrice = new BigDecimal(getGasPrice(DEPLOYMENT_CHAIN));
+        BigInteger raisedGasPrice = baseGasPrice.multiply(BigDecimal.valueOf(1.3)).toBigInteger(); //use 1.3x base price for constructor tx
         BigInteger bargainGasPrice = baseGasPrice.multiply(BigDecimal.valueOf(0.8)).toBigInteger();
 
         //get current nonce:
@@ -79,15 +79,15 @@ public class RecoverEth
         }
 
         //Now write the payout contract at the target nonce to match the contract deployed on the other network
-        String txReceipt = createConstructorUsingNonce(targetNonce, raisedGasPrice, BigInteger.valueOf(5000000L), PAYOUT_CONTRACT, "", DEPLOYMENT_CHAIN).blockingGet();
+        String txReceipt = createConstructorUsingNonce(targetNonce, raisedGasPrice, BigInteger.valueOf(170000L), PAYOUT_CONTRACT, "", DEPLOYMENT_CHAIN).blockingGet();
         System.out.println("Send CTor transaction: " + txReceipt);
     }
 
-    private BigInteger getGasPrice()
+    private BigInteger getGasPrice(int chainId)
     {
         BigInteger gasPrice = BigInteger.valueOf(2000000000L);
         try {
-            gasPrice = getWeb3j().ethGasPrice().send().getGasPrice();
+            gasPrice = getWeb3j(chainId).ethGasPrice().send().getGasPrice();
         }
         catch (Exception e)
         {
@@ -162,19 +162,18 @@ public class RecoverEth
         });
     }
 
-    private Web3j getWeb3j() {
+    private Web3j getWeb3j(int chainId) {
         //Infura
-        //HttpService nodeService = new HttpService("https://rinkeby.infura.io/v3/da3717f25f824cc1baa32d812386d93f", client, false);
         HttpService nodeService;
-        if (DEPLOYMENT_CHAIN == MAINNET_ID)
+        if (chainId == MAINNET_ID)
         {
             nodeService = new HttpService("https://mainnet.infura.io/v3/da3717f25f824cc1baa32d812386d93f", client, false);
         }
-        else if (DEPLOYMENT_CHAIN == RINKEBY_ID)
+        else if (chainId == RINKEBY_ID)
         {
             nodeService = new HttpService("https://rinkeby.infura.io/v3/da3717f25f824cc1baa32d812386d93f", client, false);
         }
-        else if (DEPLOYMENT_CHAIN == ROPSTEN_ID)
+        else if (chainId == ROPSTEN_ID)
         {
             nodeService = new HttpService("https://ropsten.infura.io/v3/da3717f25f824cc1baa32d812386d93f", client, false);
         }
